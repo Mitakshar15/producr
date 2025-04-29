@@ -5,4 +5,5 @@ public class UserConstants {
   public static final String SIGN_IN_SUCCESS_MESSAGE = "sign.in.success";
   public static final String SIGN_UP_SUCCESS_MESSAGE = "sign.up.success";
   public static final String AUTH_SUCCESS_MESSAGE = "auth.success";
+  public static final String GET_USER_PROFILE_SUCCES_MESSAGE = "get.user.profile.success";
 }

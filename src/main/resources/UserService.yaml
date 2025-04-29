@@ -80,4 +80,37 @@ paths:
             application/json:
               schema:
                 $ref: './UserMgmtApiComponents.yaml#/components/schemas/UserMgmtBaseApiResponse'
+
+  /v1/user/profile:
+    get:
+      tags:
+        - user controller v1
+      summary: Get User Profile
+      description: Get User Profile
+      operationId: getUserProfile
+      parameters:
+        - in: header
+          name: "Authorization"
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Get User Profile Success"
+          content:
+            application/json:
+              schema:
+                $ref: './UserMgmtApiComponents.yaml#/components/schemas/UserProfileResponse'
+        '422':
+          description: "Get User Profile Request is valid but the service was not able to process it ..."
+          content:
+            application/json:
+              schema:
+                $ref: './UserMgmtApiComponents.yaml#/components/schemas/UserMgmtBaseApiResponse'
+        '401':
+          description: "Validations failed for request arguments ..."
+          content:
+            application/json:
+              schema:
+                $ref: './UserMgmtApiComponents.yaml#/components/schemas/UserMgmtBaseApiResponse'
   

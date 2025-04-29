@@ -87,4 +87,11 @@ public class UserServiceImpl implements UserService {
     authResponseDto.setProvider(user.getProvider().toString());
     return authResponseDto;
   }
+
+  @Override
+  public User handleGetUserProfile(String authorization) {
+    String userId = jwtTokenUtil.getUsernameFromToken(authorization);
+    return userRepository.findByEmailOrUsername(userId)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+  }
 }

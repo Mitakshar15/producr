@@ -64,7 +64,12 @@ public class JwtTokenUtil {
   }
 
   public String getUsernameFromToken(String token) {
-    return getClaimFromToken(token, Claims::getSubject);
+    try {
+      String claim = getClaimFromToken(token, Claims::getSubject);
+      return claim;
+    } catch (Exception e) {
+      throw new RuntimeException("INVALID TOKEN ::" + token + ":: ERROR" + e.getMessage());
+    }
   }
 
   public Date getExpirationDateFromToken(String token) {
@@ -77,7 +82,10 @@ public class JwtTokenUtil {
   }
 
   private Claims getAllClaimsFromToken(String token) {
-    return Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token).getBody();
+    String cleanedToken = token.replace("Bearer", "").replaceAll("\\s+", "");
+    Claims claims = Jwts.parserBuilder().setSigningKey(getSignKey()).build()
+        .parseClaimsJws(cleanedToken).getBody();
+    return claims;
   }
 
   public Boolean validateToken(String token, UserDetails userDetails) {

@@ -44,7 +44,8 @@ public class SecurityConfig {
             .authorizationEndpoint(authEndpoint -> authEndpoint.baseUri("/oauth2/authorize"))
             .redirectionEndpoint(redirectEndpoint -> redirectEndpoint.baseUri("/api/v1/oauth2/**"))
             .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-            .successHandler(oAuth2AuthenticationSuccessHandler).failureHandler(new SimpleUrlAuthenticationFailureHandler("/login?error=true")));
+            .successHandler(oAuth2AuthenticationSuccessHandler)
+            .failureHandler(new SimpleUrlAuthenticationFailureHandler("/login?error=true")));
 
     // Add JWT filter
     http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

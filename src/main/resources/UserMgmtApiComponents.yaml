@@ -13,13 +13,14 @@ components:
         - $ref: '#/components/schemas/BaseApiResponse'
 
     # ************************ User Api Responses ******************
-    GetUserResponse:
+    UserProfileResponse:
       type: object
       properties:
-        name:
-          type: string
+        data:
+          type: object
+          $ref: "#/components/schemas/UserProfileDto"
       allOf:
-        - $ref: '#/components/schemas/UserMgmtBaseApiResponse'
+        - $ref: "#/components/schemas/UserMgmtBaseApiResponse"
 
     AuthResponse:
       type: object
@@ -120,4 +121,92 @@ components:
         provider:
           type: string
 
+    UserProfileDto:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        provider:
+          type: string
+        profile:
+          type: object
+          $ref: "#/components/schemas/ProfileData"
+        role:
+          type: string
+        skills:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/SkillDto"
+        badges:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/BadgeDto"
+        createdAt:
+          type: string
+          format: local-date-time
+        noOfTracks:
+          type: integer
 
+
+
+
+    ProfileData:
+      type: object
+      properties:
+        displayName:
+          type: string
+        bio:
+          type: string
+        location:
+          type: string
+        profileImageUrl:
+          type: string
+        websiteUrl:
+          type: string
+        bannerImageUrl:
+          type: string
+        socialLinks:
+          type: object
+          additionalProperties:
+            type: string
+        genrePreferences:
+          type: array
+          uniqueItems:
+            type: string
+        equipmentInfo:
+          type: string
+        availabilityStatus:
+          type: string
+        collaborationPreference:
+          type: string
+
+
+    SkillDto:
+      type: object
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        iconUrl:
+          type: string
+
+    BadgeDto:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        imageUrl:
+          type: string
+        category:
+          type: string
+        achievementCriteria:
+          type: string

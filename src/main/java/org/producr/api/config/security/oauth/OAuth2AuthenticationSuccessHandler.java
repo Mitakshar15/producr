@@ -13,6 +13,7 @@ import org.producr.api.config.security.jwt.UserPrincipal;
 import org.producr.api.dtos.AuthResponse;
 import org.producr.api.dtos.AuthResponseDto;
 import org.producr.api.mapper.UserMgmtMapper;
+import org.producr.api.service.interfaces.UserService;
 import org.producr.api.utils.constants.UserConstants;
 import org.producr.api.utils.enums.AuthProvider;
 import org.producr.api.utils.enums.UserRole;
@@ -48,7 +49,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     objectMapper.registerModule(new JavaTimeModule());
     objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // Op
     String jsonResponse = objectMapper.writeValueAsString(authResponse);
-
     // Set response headers and write response
     response.setContentType("application/json");
     response.setCharacterEncoding("UTF-8");

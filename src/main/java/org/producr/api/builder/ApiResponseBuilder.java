@@ -3,9 +3,12 @@ package org.producr.api.builder;
 
 import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
+import org.producr.api.data.domain.user.User;
 import org.producr.api.dto.BaseApiResponse;
 import org.producr.api.dto.Metadata;
 import org.producr.api.dto.Status;
+import org.producr.api.dtos.UserProfileDto;
+import org.producr.api.mapper.UserMgmtMapper;
 import org.producr.api.utils.constants.UserConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -18,6 +21,7 @@ import java.util.Objects;
 public class ApiResponseBuilder {
 
   private final Tracer tracer;
+  private final UserMgmtMapper mapper;
 
   public BaseApiResponse buildSuccessApiResponse(String statusMessage) {
     return new BaseApiResponse()
@@ -29,4 +33,9 @@ public class ApiResponseBuilder {
             .statusMessageKey(UserConstants.RESPONSE_MESSAGE_KEY_SUCCESS));
   }
 
+  public UserProfileDto buildUserProfileData(User user) {
+    UserProfileDto dto = mapper.toUserProfileDto(user);
+    dto.setNoOfTracks(user.getTracks().size());
+    return dto;
+  }
 }

@@ -165,7 +165,11 @@
             <artifactId>mapstruct</artifactId>
             <version>1.5.5.Final</version> <!-- Use the latest version -->
         </dependency>
-
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>java-dotenv</artifactId>
+            <version>5.2.2</version>
+        </dependency>
     </dependencies>
 
     <build>
