@@ -1,0 +1,123 @@
+components:
+  schemas:
+    # ************************ Common Api Responses ******************
+    BaseApiResponse:
+      type: object
+      discriminator:
+        propertyName: respType
+
+    UserMgmtBaseApiResponse:
+      type: object
+      properties:
+      allOf:
+        - $ref: '#/components/schemas/BaseApiResponse'
+
+    # ************************ User Api Responses ******************
+    GetUserResponse:
+      type: object
+      properties:
+        name:
+          type: string
+      allOf:
+        - $ref: '#/components/schemas/UserMgmtBaseApiResponse'
+
+    AuthResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: '#/components/schemas/AuthResponseDto'
+      allOf:
+        - $ref: '#/components/schemas/UserMgmtBaseApiResponse'
+
+    ActivationResponse:
+      type: object
+      properties:
+      allOf:
+        - $ref: '#/components/schemas/UserMgmtBaseApiResponse'
+
+    ProfileResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: '#/components/schemas/UserProfileDto'
+      allOf:
+        - $ref: '#/components/schemas/UserMgmtBaseApiResponse'
+
+    ResetPasswordResponse:
+      type: object
+      properties:
+      allOf:
+        - $ref: "#/components/schemas/UserMgmtBaseApiResponse"
+
+
+    # ********************** User Api Requests ********************
+
+    SignUpRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        userName:
+          type: string
+          description: First name of the user.
+        password:
+          type: string
+          description: User's password.
+        email:
+          type: string
+          format: email
+          description: User's email address.
+
+
+    SignInRequest:
+      type: object
+      required:
+        -email
+        -password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    ActivationRequest:
+      type: object
+      required:
+        - activationCode
+      properties:
+        activationCode:
+          type: string
+
+    CreateRoleRequest:
+      type: object
+      required:
+        - role
+      properties:
+        role:
+          type: string
+
+    AssignRoleRequest:
+      type: object
+      properties:
+        roles:
+          type: array
+          items:
+            type: string
+
+    # *************** User Service DTO's **************
+    AuthResponseDto:
+      type: object
+      required:
+        -jwt
+      properties:
+        token:
+          type: string
+        userName:
+          type: string
+        provider:
+          type: string
+
+
