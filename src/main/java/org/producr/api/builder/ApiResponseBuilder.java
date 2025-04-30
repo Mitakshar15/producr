@@ -10,7 +10,7 @@ import org.producr.api.dto.Metadata;
 import org.producr.api.dto.Status;
 import org.producr.api.dtos.UserProfileDto;
 import org.producr.api.mapper.UserMgmtMapper;
-import org.producr.api.utils.constants.UserConstants;
+import org.producr.api.utils.constants.Constants;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +31,7 @@ public class ApiResponseBuilder {
                 ? Objects.requireNonNull(tracer.currentSpan()).context().traceId()
                 : ""))
         .status(new Status().statusCode(HttpStatus.OK.value()).statusMessage(statusMessage)
-            .statusMessageKey(UserConstants.RESPONSE_MESSAGE_KEY_SUCCESS));
+            .statusMessageKey(Constants.RESPONSE_MESSAGE_KEY_SUCCESS));
   }
 
   public UserProfileDto buildUserProfileData(User user) {

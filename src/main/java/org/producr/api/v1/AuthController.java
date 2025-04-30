@@ -10,7 +10,7 @@ import org.producr.api.dtos.SignInRequest;
 import org.producr.api.dtos.SignUpRequest;
 import org.producr.api.mapper.UserMgmtMapper;
 import org.producr.api.service.interfaces.UserService;
-import org.producr.api.utils.constants.UserConstants;
+import org.producr.api.utils.constants.Constants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,7 +32,7 @@ public class AuthController implements AuthControllerV1Api {
   @Override
   public ResponseEntity<AuthResponse> signIn(SignInRequest signInRequest) throws Exception {
     AuthResponse authResponse = mapper
-        .toAuthResponse(builder.buildSuccessApiResponse(UserConstants.SIGN_IN_SUCCESS_MESSAGE));
+        .toAuthResponse(builder.buildSuccessApiResponse(Constants.SIGN_IN_SUCCESS_MESSAGE));
     authResponse.setData(userService.handleSignIn(signInRequest));
     return new ResponseEntity<>(authResponse, HttpStatus.OK);
   }
@@ -40,7 +40,7 @@ public class AuthController implements AuthControllerV1Api {
   @Override
   public ResponseEntity<AuthResponse> signUp(SignUpRequest signUpRequest) throws Exception {
     AuthResponse response = mapper
-        .toAuthResponse(builder.buildSuccessApiResponse(UserConstants.SIGN_UP_SUCCESS_MESSAGE));
+        .toAuthResponse(builder.buildSuccessApiResponse(Constants.SIGN_UP_SUCCESS_MESSAGE));
     response.setData(userService.handleSignUp(signUpRequest));
     return new ResponseEntity<>(response, HttpStatus.OK);
   }

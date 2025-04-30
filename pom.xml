@@ -47,6 +47,24 @@
         <mapstruct-version>1.5.5.Final</mapstruct-version>
     </properties>
     <dependencies>
+
+        <!-- MP3 Service Provider Interface for Java Sound API -->
+        <dependency>
+            <groupId>com.googlecode.soundlibs</groupId>
+            <artifactId>mp3spi</artifactId>
+            <version>1.9.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>javazoom</groupId>
+            <artifactId>jlayer</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <!-- Tritonus share - audio utilities -->
+        <dependency>
+            <groupId>com.googlecode.soundlibs</groupId>
+            <artifactId>tritonus-share</artifactId>
+            <version>0.3.7.4</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/net.jthink/jaudiotagger -->
         <dependency>
             <groupId>net.jthink</groupId>

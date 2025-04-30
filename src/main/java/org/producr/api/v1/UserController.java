@@ -6,7 +6,7 @@ import org.producr.api.builder.ApiResponseBuilder;
 import org.producr.api.dtos.UserProfileResponse;
 import org.producr.api.mapper.UserMgmtMapper;
 import org.producr.api.service.interfaces.UserService;
-import org.producr.api.utils.constants.UserConstants;
+import org.producr.api.utils.constants.Constants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +23,7 @@ public class UserController implements UserControllerV1Api {
   @Override
   public ResponseEntity<UserProfileResponse> getUserProfile(String authorization) throws Exception {
     UserProfileResponse response = mapper.toUserProfileResponse(
-        builder.buildSuccessApiResponse(UserConstants.GET_USER_PROFILE_SUCCES_MESSAGE));
+        builder.buildSuccessApiResponse(Constants.GET_USER_PROFILE_SUCCES_MESSAGE));
     response.data(builder.buildUserProfileData(userService.handleGetUserProfile(authorization)));
     return new ResponseEntity<>(response, HttpStatus.OK);
   }

@@ -13,8 +13,7 @@ import org.producr.api.config.security.jwt.UserPrincipal;
 import org.producr.api.dtos.AuthResponse;
 import org.producr.api.dtos.AuthResponseDto;
 import org.producr.api.mapper.UserMgmtMapper;
-import org.producr.api.service.interfaces.UserService;
-import org.producr.api.utils.constants.UserConstants;
+import org.producr.api.utils.constants.Constants;
 import org.producr.api.utils.enums.AuthProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -38,7 +37,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     String token = jwtTokenUtil.generateToken(userPrincipal);
     AuthResponse authResponse =
-        mapper.toAuthResponse(builder.buildSuccessApiResponse(UserConstants.AUTH_SUCCESS_MESSAGE));
+        mapper.toAuthResponse(builder.buildSuccessApiResponse(Constants.AUTH_SUCCESS_MESSAGE));
     AuthResponseDto authResponseDto = new AuthResponseDto();
     authResponseDto.setToken(token);
     authResponseDto.setUserName(userPrincipal.getUsername());
