@@ -11,7 +11,10 @@ import org.producr.api.utils.enums.TrackType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
@@ -154,39 +157,17 @@ public class StorageService {
 
   public String generateWaveformData(String audioFilePath) throws IOException, UnsupportedAudioFileException {
     log.info("Generating waveform data for {}", audioFilePath);
+
     File audioFile = new File(audioFilePath);
     if (!audioFile.exists()) {
       throw new IOException("Audio file does not exist: " + audioFilePath);
     }
 
-    File wavFile = audioFile;
-    boolean isTemporaryFile = false;
 
-    // Check if the file is an MP3 file
-    if (audioFilePath.toLowerCase().endsWith(".mp3")) {
-      log.info("Converting MP3 to WAV format for processing");
-      // Create a temporary WAV file
-      wavFile = File.createTempFile("temp_converted_audio", ".wav");
-      isTemporaryFile = true;
-
-      // Convert MP3 to WAV
-      try {
-        convertMp3ToWavUsingJavaLayer(audioFile, wavFile);
-        log.info("Successfully converted MP3 to WAV: {}", wavFile.getAbsolutePath());
-      } catch (Exception e) {
-        if (isTemporaryFile && wavFile.exists()) {
-          wavFile.delete();
-        }
-        throw new IOException("Failed to convert MP3 to WAV: " + e.getMessage(), e);
-      }
+    if(getFileExtensionFromPath(audioFilePath).equals(".mp3")) {
+      return generateMP3WaveformData(audioFilePath);
     }
 
-    return getWaveFormDataFromFile(wavFile);
-
-  }
-
-
-  private String getWaveFormDataFromFile(File audioFile) throws IOException, UnsupportedAudioFileException {
     // Open the audio file
     AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(audioFile);
     AudioFormat format = audioInputStream.getFormat();
@@ -248,136 +229,109 @@ public class StorageService {
 
 
   /**
-   * Converts an MP3 file to WAV format
-   * @param mp3File the source MP3 file
-   * @param wavFile the destination WAV file
+   * Generates waveform data for MP3 files.
+   *
+   * @param mp3FilePath Path to the MP3 file
+   * @return JSON string containing the waveform data points
+   * @throws IOException If there is an error reading the file
+   * @throws UnsupportedAudioFileException If the file format is not supported
    */
-  private void convertMp3ToWavUsingJavaLayer(File mp3File, File wavFile) throws Exception {
-    FileOutputStream fos = null;
-    BufferedOutputStream bos = null;
+  public String generateMP3WaveformData(String mp3FilePath) throws IOException, UnsupportedAudioFileException {
+    log.info("Generating waveform data for MP3 file: {}", mp3FilePath);
 
+    File mp3File = new File(mp3FilePath);
+    if (!mp3File.exists()) {
+      throw new IOException("MP3 file does not exist: " + mp3FilePath);
+    }
+
+    // Ensure MP3SPI is registered with the system
     try {
-      // Set up MP3 input
-      FileInputStream fis = new FileInputStream(mp3File);
-      BufferedInputStream bis = new BufferedInputStream(fis);
+      Class.forName("javazoom.spi.mpeg.sampled.file.MpegAudioFileReader");
+    } catch (ClassNotFoundException e) {
+      throw new IOException("MP3SPI library is required to process MP3 files", e);
+    }
 
-      // Set up JavaLayer MP3 decoder
-      javazoom.jl.decoder.Bitstream bitstream = new javazoom.jl.decoder.Bitstream(bis);
-      javazoom.jl.decoder.Decoder decoder = new javazoom.jl.decoder.Decoder();
+    // Open the MP3 file
+    AudioInputStream mp3Stream = AudioSystem.getAudioInputStream(mp3File);
+    AudioFormat baseFormat = mp3Stream.getFormat();
 
-      // Get header to extract format information
-      javazoom.jl.decoder.Header header = bitstream.readFrame();
-      int channels = (header.mode() == javazoom.jl.decoder.Header.SINGLE_CHANNEL) ? 1 : 2;
-      int sampleRate = header.frequency();
+    // Convert MP3 format to PCM if necessary
+    AudioInputStream audioInputStream;
+    if (baseFormat.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
+      AudioFormat decodedFormat = new AudioFormat(
+              AudioFormat.Encoding.PCM_SIGNED,
+              baseFormat.getSampleRate(),
+              16,
+              baseFormat.getChannels(),
+              baseFormat.getChannels() * 2,
+              baseFormat.getSampleRate(),
+              false);
+      audioInputStream = AudioSystem.getAudioInputStream(decodedFormat, mp3Stream);
+    } else {
+      audioInputStream = mp3Stream;
+    }
 
-      // Reset stream position
-      fis.close();
-      fis = new FileInputStream(mp3File);
-      bis = new BufferedInputStream(fis);
-      bitstream = new javazoom.jl.decoder.Bitstream(bis);
+    AudioFormat format = audioInputStream.getFormat();
+    int channels = format.getChannels();
+    int frameSize = format.getFrameSize();
+    int sampleSizeInBits = format.getSampleSizeInBits();
 
-      // Set up WAV output
-      fos = new FileOutputStream(wavFile);
-      bos = new BufferedOutputStream(fos);
+    // Create a buffer for reading
+    int bufferSize = 4096;
+    byte[] buffer = new byte[bufferSize];
+    ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 
-      // Write WAV header
-      writeWavHeader(bos, channels, sampleRate, 16);
+    // Read the entire audio stream
+    int bytesRead;
+    while ((bytesRead = audioInputStream.read(buffer, 0, buffer.length)) != -1) {
+      byteStream.write(buffer, 0, bytesRead);
+    }
 
-      // Process frames
-      int frameCount = 0;
-      boolean done = false;
+    byte[] audioBytes = byteStream.toByteArray();
 
-      while (!done) {
-        try {
-          header = bitstream.readFrame();
-          if (header == null) {
-            done = true;
-          } else {
-            javazoom.jl.decoder.SampleBuffer output = (javazoom.jl.decoder.SampleBuffer) decoder.decodeFrame(header, bitstream);
-            short[] pcm = output.getBuffer();
+    // For waveform visualization, aim for ~1000-2000 data points
+    int desiredDataPoints = 1000;
+    int samplesPerDataPoint = Math.max(1, audioBytes.length / (desiredDataPoints * (sampleSizeInBits / 8) * channels));
 
-            // Write PCM data to WAV file
-            for (short sample : pcm) {
-              bos.write(sample & 0xff);
-              bos.write((sample >> 8) & 0xff);
-            }
+    List<Integer> waveformData = new ArrayList<>();
 
-            frameCount++;
-            bitstream.closeFrame();
-          }
-        } catch (Exception e) {
-          log.warn("Error processing MP3 frame, skipping: {}", e.getMessage());
-          bitstream.closeFrame();
-        }
+    // Process audio data to generate waveform points
+    for (int i = 0; i < audioBytes.length - frameSize; i += samplesPerDataPoint * frameSize) {
+      // Calculate amplitude for this sample
+      int amplitude = 0;
+
+      if (sampleSizeInBits == 8) {
+        // 8-bit audio is unsigned
+        amplitude = audioBytes[i] & 0xff;
+      } else if (sampleSizeInBits == 16) {
+        // 16-bit audio is signed, little endian
+        amplitude = (audioBytes[i + 1] << 8) | (audioBytes[i] & 0xff);
       }
 
-      // Update WAV header with final size
-      updateWavHeader(wavFile);
-
-      log.info("Converted MP3 to WAV using JavaLayer decoder, processed {} frames", frameCount);
-    } catch (Exception e) {
-      log.error("Error in JavaLayer MP3 to WAV conversion", e);
-      throw new Exception("JavaLayer MP3 conversion failed: " + e.getMessage(), e);
-    } finally {
-      if (bos != null) try { bos.close(); } catch (IOException e) { /* ignore */ }
-      if (fos != null) try { fos.close(); } catch (IOException e) { /* ignore */ }
+      // Normalize to a 0-100 range for consistent visualization
+      int normalizedAmplitude = Math.abs(amplitude * 100 / (1 << (sampleSizeInBits - 1)));
+      waveformData.add(normalizedAmplitude);
     }
-  }
 
-  private void writeWavHeader(OutputStream out, int channels, int sampleRate, int bitsPerSample) throws IOException {
-    // RIFF header
-    writeString(out, "RIFF"); // chunk id
-    writeInt(out, 0); // chunk size (placeholder, will be updated later)
-    writeString(out, "WAVE"); // format
+    // Close the input streams
+    audioInputStream.close();
+    mp3Stream.close();
 
-    // fmt subchunk
-    writeString(out, "fmt "); // subchunk1 id
-    writeInt(out, 16); // subchunk1 size (16 for PCM)
-    writeShort(out, (short) 1); // audio format (1 for PCM)
-    writeShort(out, (short) channels); // number of channels
-    writeInt(out, sampleRate); // sample rate
-    int byteRate = sampleRate * channels * bitsPerSample / 8;
-    writeInt(out, byteRate); // byte rate
-    writeShort(out, (short) (channels * bitsPerSample / 8)); // block align
-    writeShort(out, (short) bitsPerSample); // bits per sample
-
-    // data subchunk
-    writeString(out, "data"); // subchunk2 id
-    writeInt(out, 0); // subchunk2 size (placeholder, will be updated later)
-  }
-
-  private void updateWavHeader(File wavFile) throws IOException {
-    RandomAccessFile raf = new RandomAccessFile(wavFile, "rw");
-    long fileLength = raf.length();
-
-    // Update chunk size in the RIFF header (fileLength - 8)
-    raf.seek(4);
-    raf.writeInt(Integer.reverseBytes((int) (fileLength - 8)));
-
-    // Update subchunk2 size in the data header (fileLength - 44)
-    raf.seek(40);
-    raf.writeInt(Integer.reverseBytes((int) (fileLength - 44)));
-
-    raf.close();
-  }
-
-  private void writeInt(OutputStream out, int value) throws IOException {
-    out.write(value & 0xff);
-    out.write((value >> 8) & 0xff);
-    out.write((value >> 16) & 0xff);
-    out.write((value >> 24) & 0xff);
-  }
-
-  private void writeShort(OutputStream out, short value) throws IOException {
-    out.write(value & 0xff);
-    out.write((value >> 8) & 0xff);
-  }
-
-  private void writeString(OutputStream out, String value) throws IOException {
-    for (int i = 0; i < value.length(); i++) {
-      out.write(value.charAt(i));
+    // Convert waveform data to JSON
+    StringBuilder jsonBuilder = new StringBuilder();
+    jsonBuilder.append("[");
+    for (int i = 0; i < waveformData.size(); i++) {
+      jsonBuilder.append(waveformData.get(i));
+      if (i < waveformData.size() - 1) {
+        jsonBuilder.append(",");
+      }
     }
+    jsonBuilder.append("]");
+
+    return jsonBuilder.toString();
   }
+
+
 
   private String getTrackTypePath(TrackType trackType, String userId) {
     return trackType.toString().toLowerCase() + "/" + userId.substring(0, 2) + "/" + userId;
@@ -399,5 +353,4 @@ public class StorageService {
   }
   // For cloud storage integration (e.g., AWS S3, Google Cloud Storage)
   // Implement alternative versions of the above methods using cloud SDKs
-
 }
