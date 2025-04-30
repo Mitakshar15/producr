@@ -3,7 +3,6 @@ package org.producr.api.v1;
 import lombok.RequiredArgsConstructor;
 import org.producr.api.UserControllerV1Api;
 import org.producr.api.builder.ApiResponseBuilder;
-import org.producr.api.data.domain.user.UserProfile;
 import org.producr.api.dtos.UserProfileResponse;
 import org.producr.api.mapper.UserMgmtMapper;
 import org.producr.api.service.interfaces.UserService;

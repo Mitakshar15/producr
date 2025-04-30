@@ -4,17 +4,16 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.producr.api.data.domain.user.User;
+import org.producr.api.utils.enums.TrackType;
 
 @Data
 @NoArgsConstructor
@@ -36,6 +35,7 @@ public class Track implements Serializable {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "producer_id", nullable = false)
+  @ToString.Exclude
   private User producer;
 
   @Column(name = "audio_file_url", nullable = false)
@@ -92,7 +92,8 @@ public class Track implements Serializable {
 
   // Discriminator field to identify track type
   @Column(name = "track_type", insertable = false, updatable = false)
-  private String trackType;
+  @Enumerated(EnumType.STRING)
+  private TrackType trackType;
 
   public boolean isBeat() {
     return this instanceof Beat;
@@ -100,5 +101,47 @@ public class Track implements Serializable {
 
   public boolean isAudioSample() {
     return this instanceof AudioSample;
+  }
+
+  public Beat asBeat() {
+    if (isBeat()) {
+      return (Beat) this;
+    }
+    throw new IllegalStateException("Track is not a Beat");
+  }
+
+  public AudioSample asAudioSample() {
+    if (isAudioSample()) {
+      return (AudioSample) this;
+    }
+    throw new IllegalStateException("Track is not an AudioSample");
+  }
+
+  @PrePersist
+  void setTrackType() {
+    if (this instanceof AudioSample) {
+      this.trackType = TrackType.SAMPLE;
+    } else if (this instanceof Beat) {
+      this.trackType = TrackType.BEAT;
+    }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    Track track = (Track) o;
+    return Objects.equals(id, track.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id); // Use only id to avoid recursion
+  }
+
+  public void incrementPlayCount() {
+    this.playsCount++;
   }
 }

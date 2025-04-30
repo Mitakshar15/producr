@@ -1,5 +1,6 @@
 package org.producr.api.data.domain.user;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.EnumType;
@@ -8,8 +9,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Column;
 import jakarta.persistence.MapKeyColumn;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.ElementCollection;
@@ -19,10 +20,9 @@ import jakarta.persistence.FetchType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.producr.api.utils.enums.AvailabilityStatus;
 import org.producr.api.utils.enums.CollaborationPreference;
-import java.util.HashMap;
-import java.util.Map;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
@@ -41,6 +41,7 @@ public class UserProfile implements Serializable {
   @OneToOne(fetch = FetchType.LAZY)
   @MapsId
   @JoinColumn(name = "user_id")
+  @JsonBackReference
   private User user;
 
   @Column(name = "display_name", length = 100)
@@ -85,6 +86,21 @@ public class UserProfile implements Serializable {
   @Column(name = "collaboration_preference")
   @Enumerated(EnumType.STRING)
   private CollaborationPreference collaborationPreference = CollaborationPreference.OPEN;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    UserProfile that = (UserProfile) o;
+    return Objects.equals(id, that.id); // Use only id for equality
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id); // Use only id for hashCode
+  }
 
   // Getters, setters, equals, hashCode
 }

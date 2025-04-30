@@ -1,17 +1,17 @@
 package org.producr.api.data.domain.track;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.producr.api.utils.enums.AudioCategory;
 import org.producr.api.utils.enums.SampleType;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
+@EqualsAndHashCode(callSuper = true)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "audio_samples")
 @PrimaryKeyJoinColumn(name = "track_id")
@@ -78,4 +78,33 @@ public class AudioSample extends Track {
   @Column(name = "commercial_use_allowed")
   private boolean commercialUseAllowed = true;
 
+  public AudioSample(Track track) {
+    this.setId(track.getId());
+    this.setTitle(track.getTitle());
+    this.setDescription(track.getDescription());
+    this.setProducer(track.getProducer());
+    this.setAudioFileUrl(track.getAudioFileUrl());
+    this.setWaveformData(track.getWaveformData());
+    this.setTrackLengthSeconds(track.getTrackLengthSeconds());
+    this.setPublic(track.isPublic());
+    this.setDownloadable(true); // Samples are typically downloadable
+
+    // Copy timestamps
+    this.setCreatedAt(track.getCreatedAt());
+    this.setUpdatedAt(track.getUpdatedAt());
+
+    // Copy collections if needed
+    if (track.getTags() != null) {
+      this.setTags(new HashSet<>(track.getTags()));
+    }
+
+    // Set sample-specific defaults
+    this.setRoyaltyFree(true);
+    this.setLoop(false);
+  }
+
+
+  public void incrementDownloadCount() {
+    this.downloadCount++;
+  }
 }

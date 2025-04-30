@@ -16,7 +16,6 @@ import org.producr.api.mapper.UserMgmtMapper;
 import org.producr.api.service.interfaces.UserService;
 import org.producr.api.utils.constants.UserConstants;
 import org.producr.api.utils.enums.AuthProvider;
-import org.producr.api.utils.enums.UserRole;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;

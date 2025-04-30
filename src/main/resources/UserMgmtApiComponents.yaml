@@ -210,3 +210,84 @@ components:
           type: string
         achievementCriteria:
           type: string
+
+    # ************************ Track Api Responses ******************
+    TrackUploadResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/TrackUploadResponseDto"
+      allOf:
+        - $ref: "#/components/schemas/UserMgmtBaseApiResponse"
+
+    TrackUploadResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        audioFileUrl:
+          type: string
+        TrackType:
+          type: string
+          enum: [BEAT,SAMPLE]
+        createdAt:
+          type: string
+          format: local-date-time
+
+
+    TrackUploadRequest:
+      type: object
+      properties:
+        audioFilePath:
+          type: string
+          description: URL or path to the audio file to be uploaded
+        trackType:
+          type: string
+          enum: [BEAT,SAMPLE]
+        title:
+          type: string
+        description:
+          type: string
+        isPublic:
+          type: boolean
+          default: true
+        isDownloadable:
+          type: boolean
+          default: false
+        bpm:
+          type: integer
+        key:
+          type: string
+        timeSignature:
+          type: string
+          default: "4/4"
+        genres:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+          description: Genres associated with the beat.
+        moods:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+          description: Moods associated with the beat.
+        sampleType:
+          type: string
+          enum: [ONE_SHOT, LOOP, DRUM_HIT, VOCAL_CHOP, INSTRUMENT, FX, RISER, TEXTURE, BASS, VOCAL, MELODY]
+        rootNote:
+          type: string
+        isLoop:
+          type: boolean
+          default: false
+        loopTempo:
+          type: integer
+        audioCategory:
+          type: string
+          enum: [DRUMS, BASS, SYNTH, VOCAL, GUITAR, PIANO, STRINGS, BRASS, WOODWIND, FX, AMBIENT, PERCUSSION]
+
+

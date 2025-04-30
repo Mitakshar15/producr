@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +64,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     user.setProvider(AuthProvider.GOOGLE);
     user.setProviderId(userInfo.getId());
-    user.setUsername(userInfo.getName());
+    // Todo: Handle the Existing Username Properly while trying to login with google
+    if (userRepository.existsByUsername(userInfo.getName())) {
+      user.setUsername(userInfo.getName() + UUID.randomUUID().toString().substring(0, 2));
+    } else {
+      user.setUsername(userInfo.getName());
+    }
     user.setEmail(userInfo.getEmail());
     user.setPassword("");
     user.setAccountVerified(true);

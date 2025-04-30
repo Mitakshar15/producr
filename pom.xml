@@ -47,6 +47,17 @@
         <mapstruct-version>1.5.5.Final</mapstruct-version>
     </properties>
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/net.jthink/jaudiotagger -->
+        <dependency>
+            <groupId>net.jthink</groupId>
+            <artifactId>jaudiotagger</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version> <!-- Use the latest version -->
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>

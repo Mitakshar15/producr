@@ -1,12 +1,21 @@
 package org.producr.api.data.domain.track;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+
+@EqualsAndHashCode(callSuper = true)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "beats")
 @PrimaryKeyJoinColumn(name = "track_id")
@@ -80,4 +89,27 @@ public class Beat extends Track {
 
   @Column(name = "is_verified_original")
   private boolean isVerifiedOriginal = false;
+
+
+  public Beat(Track track) {
+    // Copy base track properties using setters
+    this.setId(track.getId());
+    this.setTitle(track.getTitle());
+    this.setDescription(track.getDescription());
+    this.setProducer(track.getProducer());
+    this.setAudioFileUrl(track.getAudioFileUrl());
+    this.setWaveformData(track.getWaveformData());
+    this.setTrackLengthSeconds(track.getTrackLengthSeconds());
+    this.setPublic(track.isPublic());
+    this.setDownloadable(false); // Beats typically aren't freely downloadable
+
+    // Copy timestamps
+    this.setCreatedAt(track.getCreatedAt());
+    this.setUpdatedAt(track.getUpdatedAt());
+
+    // Copy collections if needed
+    if (track.getTags() != null) {
+      this.setTags(new HashSet<>(track.getTags()));
+    }
+  }
 }

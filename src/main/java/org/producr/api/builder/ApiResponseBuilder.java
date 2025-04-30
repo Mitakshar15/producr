@@ -3,6 +3,7 @@ package org.producr.api.builder;
 
 import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.producr.api.data.domain.user.User;
 import org.producr.api.dto.BaseApiResponse;
 import org.producr.api.dto.Metadata;
@@ -35,6 +36,7 @@ public class ApiResponseBuilder {
 
   public UserProfileDto buildUserProfileData(User user) {
     UserProfileDto dto = mapper.toUserProfileDto(user);
+    Hibernate.initialize(user.getTracks());
     dto.setNoOfTracks(user.getTracks().size());
     return dto;
   }

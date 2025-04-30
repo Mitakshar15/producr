@@ -113,4 +113,44 @@ paths:
             application/json:
               schema:
                 $ref: './UserMgmtApiComponents.yaml#/components/schemas/UserMgmtBaseApiResponse'
+
+  /v1/track/upload:
+    post:
+      tags:
+        - track controller v1
+      summary: Upload Audio File [beat/sample]
+      description: Upload Audio File
+      operationId: uploadAudioFile
+      parameters:
+        - in: header
+          name: "Authorization"
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Sign In Request
+        content:
+          application/json:
+            schema:
+              $ref: './UserMgmtApiComponents.yaml#/components/schemas/TrackUploadRequest'
+        required: true
+      responses:
+        '200':
+          description: "Get User Profile Success"
+          content:
+            application/json:
+              schema:
+                $ref: './UserMgmtApiComponents.yaml#/components/schemas/TrackUploadResponse'
+        '422':
+          description: "Get User Profile Request is valid but the service was not able to process it ..."
+          content:
+            application/json:
+              schema:
+                $ref: './UserMgmtApiComponents.yaml#/components/schemas/UserMgmtBaseApiResponse'
+        '401':
+          description: "Validations failed for request arguments ..."
+          content:
+            application/json:
+              schema:
+                $ref: './UserMgmtApiComponents.yaml#/components/schemas/UserMgmtBaseApiResponse'
   

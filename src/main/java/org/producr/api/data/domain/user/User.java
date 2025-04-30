@@ -1,6 +1,7 @@
 package org.producr.api.data.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
@@ -10,10 +11,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.GenerationType;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
@@ -66,7 +65,8 @@ public class User implements Serializable {
   @Column(nullable = false)
   private UserRole role = UserRole.USER;
 
-  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+  @JsonManagedReference
   private UserProfile profile;
 
   @OneToMany(mappedBy = "producer", cascade = CascadeType.ALL)
@@ -105,4 +105,19 @@ public class User implements Serializable {
 
   @Column(name = "reset_password_expiry")
   private LocalDateTime resetPasswordExpiry;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    User user = (User) o;
+    return Objects.equals(id, user.id); // Use only id for equality
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id); // Use only id for hashCode
+  }
 }
