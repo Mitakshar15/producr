@@ -1,0 +1,94 @@
+openapi: 3.0.3
+info:
+  title: PRODUCR - OpenAPI 3.0
+  description: |-
+    PRODUCR API Spec
+  version: 0.0.1
+  contact:
+    name: API Support
+    email: work.mitakshar@gmail.com
+servers:
+  - url: api
+tags:
+  - name: PRODUCR marketplace  v1
+    description: Producr - Online Beat Marketplace User Mgmt endpoints version 1
+
+paths:
+  /v1/feed/tracks:
+    get:
+      tags:
+        - track controller v1
+      summary: Get Track Feed
+      description: Get Track Feed
+      operationId: getFeedTracks
+      parameters:
+        - in: header
+          name: "Authorization"
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: "page"
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "Get Tracks Success"
+          content:
+            application/json:
+              schema:
+                $ref: './TrackServiceComponents.yaml#/components/schemas/TrackFeedPageResponse'
+        '422':
+          description: "Get Track Feed Request is valid but the service was not able to process it ..."
+          content:
+            application/json:
+              schema:
+                $ref: './TrackServiceComponents.yaml#/components/schemas/TrackBaseApiResponse'
+        '400':
+          description: "Validations failed for request arguments ..."
+          content:
+            application/json:
+              schema:
+                $ref: './TrackServiceComponents.yaml#/components/schemas/TrackBaseApiResponse'
+
+  /v1/track/upload:
+    post:
+      tags:
+        - track controller v1
+      summary: Upload Audio File [beat/sample]
+      description: Upload Audio File
+      operationId: uploadAudioFile
+      parameters:
+        - in: header
+          name: "Authorization"
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Sign In Request
+        content:
+          application/json:
+            schema:
+              $ref: './UserMgmtApiComponents.yaml#/components/schemas/TrackUploadRequest'
+        required: true
+      responses:
+        '200':
+          description: "Get User Profile Success"
+          content:
+            application/json:
+              schema:
+                $ref: './UserMgmtApiComponents.yaml#/components/schemas/TrackUploadResponse'
+        '422':
+          description: "Get User Profile Request is valid but the service was not able to process it ..."
+          content:
+            application/json:
+              schema:
+                $ref: './UserMgmtApiComponents.yaml#/components/schemas/UserMgmtBaseApiResponse'
+        '401':
+          description: "Validations failed for request arguments ..."
+          content:
+            application/json:
+              schema:
+                $ref: './UserMgmtApiComponents.yaml#/components/schemas/UserMgmtBaseApiResponse'
+

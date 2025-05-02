@@ -66,7 +66,7 @@ public class StorageService {
       Files.write(filePath, audioData);
 
       // 5. Generate waveform data (optional, could be a separate method)use in service mthod only
-      //generateWaveformData(audioData, filePath.toString());
+      // generateWaveformData(audioData, filePath.toString());
 
       // 6. Return the public URL for accessing the file
       return baseUrl + "/media/" + directoryPath + "/" + uniqueFilename;
@@ -119,7 +119,7 @@ public class StorageService {
       metadata.put("channels", audioHeader.getChannels());
       metadata.put("durationSeconds", audioHeader.getTrackLength());
       metadata.put("isVariableBitRate", audioHeader.isVariableBitRate());
-      metadata.put("isLossless",audioHeader.isLossless());
+      metadata.put("isLossless", audioHeader.isLossless());
 
       // Extract tag metadata if available
       if (tag != null) {
@@ -147,6 +147,7 @@ public class StorageService {
       return metadata;
     }
   }
+
   private String getTagField(Tag tag, FieldKey fieldKey) {
     try {
       String value = tag.getFirst(fieldKey);
@@ -156,7 +157,8 @@ public class StorageService {
     }
   }
 
-  public String generateWaveformData(String audioFilePath) throws IOException, UnsupportedAudioFileException {
+  public String generateWaveformData(String audioFilePath)
+      throws IOException, UnsupportedAudioFileException {
     log.info("Generating waveform data for {}", audioFilePath);
 
     File audioFile = new File(audioFilePath);
@@ -165,7 +167,7 @@ public class StorageService {
     }
 
 
-    if(getFileExtensionFromPath(audioFilePath).equals(".mp3")) {
+    if (getFileExtensionFromPath(audioFilePath).equals(".mp3")) {
       return generateMP3WaveformData(audioFilePath);
     }
 
@@ -189,7 +191,8 @@ public class StorageService {
     // For waveform visualization, we typically want ~1000-2000 data points
     // regardless of audio length to keep visualization size reasonable
     int desiredDataPoints = 1000;
-    int samplesPerDataPoint = Math.max(1, audioBytes.length / (desiredDataPoints * (sampleSizeInBits / 8) * channels));
+    int samplesPerDataPoint =
+        Math.max(1, audioBytes.length / (desiredDataPoints * (sampleSizeInBits / 8) * channels));
 
     List<Integer> waveformData = new ArrayList<>();
 
@@ -237,7 +240,8 @@ public class StorageService {
    * @throws IOException If there is an error reading the file
    * @throws UnsupportedAudioFileException If the file format is not supported
    */
-  public String generateMP3WaveformData(String mp3FilePath) throws IOException, UnsupportedAudioFileException {
+  public String generateMP3WaveformData(String mp3FilePath)
+      throws IOException, UnsupportedAudioFileException {
     log.info("Generating waveform data for MP3 file: {}", mp3FilePath);
 
     File mp3File = new File(mp3FilePath);
@@ -259,14 +263,9 @@ public class StorageService {
     // Convert MP3 format to PCM if necessary
     AudioInputStream audioInputStream;
     if (baseFormat.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
-      AudioFormat decodedFormat = new AudioFormat(
-              AudioFormat.Encoding.PCM_SIGNED,
-              baseFormat.getSampleRate(),
-              16,
-              baseFormat.getChannels(),
-              baseFormat.getChannels() * 2,
-              baseFormat.getSampleRate(),
-              false);
+      AudioFormat decodedFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
+          baseFormat.getSampleRate(), 16, baseFormat.getChannels(), baseFormat.getChannels() * 2,
+          baseFormat.getSampleRate(), false);
       audioInputStream = AudioSystem.getAudioInputStream(decodedFormat, mp3Stream);
     } else {
       audioInputStream = mp3Stream;
@@ -292,7 +291,8 @@ public class StorageService {
 
     // For waveform visualization, aim for ~1000-2000 data points
     int desiredDataPoints = 1000;
-    int samplesPerDataPoint = Math.max(1, audioBytes.length / (desiredDataPoints * (sampleSizeInBits / 8) * channels));
+    int samplesPerDataPoint =
+        Math.max(1, audioBytes.length / (desiredDataPoints * (sampleSizeInBits / 8) * channels));
 
     List<Integer> waveformData = new ArrayList<>();
 

@@ -41,7 +41,7 @@ public class Track implements Serializable {
   @Column(name = "audio_file_url", nullable = false)
   private String audioFileUrl;
 
-  //Marked for removal
+  // Marked for removal
   @Column(name = "waveform_data", columnDefinition = "TEXT")
   private String waveformData;
 
@@ -92,7 +92,7 @@ public class Track implements Serializable {
   private LocalDateTime updatedAt;
 
   // Discriminator field to identify track type
-  @Column(name = "track_type", insertable = false, updatable = false)
+  @Column(name = "track_type", nullable = false, updatable = false)
   @Enumerated(EnumType.STRING)
   private TrackType trackType;
 

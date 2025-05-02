@@ -1,0 +1,74 @@
+components:
+  schemas:
+    # ************************ Track Feed Api Responses ******************
+    BaseApiResponse:
+      type: object
+      discriminator:
+        propertyName: respType
+
+    TrackBaseApiResponse:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseApiResponse'
+
+    TrackFeedPageResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            tracks:
+              type: array
+              items:
+                $ref: '#/components/schemas/TrackFeedItemDto'
+            totalElements:
+              type: integer
+            totalPages:
+              type: integer
+            size:
+              type: integer
+            number:
+              type: integer
+      allOf:
+        - $ref: '#/components/schemas/TrackBaseApiResponse'
+
+    # *************** Track Feed DTO's **************
+    TrackFeedItemDto:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        producer:
+          $ref: '#/components/schemas/ProducerDto'
+        audioFileUrl:
+          type: string
+        trackLengthSeconds:
+          type: integer
+        playsCount:
+          type: integer
+        likesCount:
+          type: integer
+        commentsCount:
+          type: integer
+        isPublic:
+          type: boolean
+        createdAt:
+          type: string
+          format: local-date-time
+        updatedAt:
+          type: string
+          format: local-date-time
+
+    ProducerDto:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        avatarUrl:
+          type: string

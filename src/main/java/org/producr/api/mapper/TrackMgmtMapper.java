@@ -4,9 +4,7 @@ package org.producr.api.mapper;
 import org.mapstruct.Mapper;
 import org.producr.api.data.domain.track.Track;
 import org.producr.api.dto.BaseApiResponse;
-import org.producr.api.dtos.TrackUploadRequest;
-import org.producr.api.dtos.TrackUploadResponse;
-import org.producr.api.dtos.TrackUploadResponseDto;
+import org.producr.api.dtos.*;
 import org.producr.api.utils.enums.AudioCategory;
 import org.producr.api.utils.enums.SampleType;
 
@@ -20,4 +18,8 @@ public interface TrackMgmtMapper {
   AudioCategory toAudioCategoryEnum(TrackUploadRequest.AudioCategoryEnum audioCategory);
 
   TrackUploadResponse toTrackUploadResponse(BaseApiResponse trackUploadSuccess);
+
+  TrackFeedPageResponse toTrackFeedPageResponse(BaseApiResponse baseApiResponse);
+
+  TrackFeedItemDto toTrackFeedItemDto(Track track);
 }

@@ -90,12 +90,12 @@ public class AudioUploadServiceImpl implements AudioUploadService {
     baseTrack.setTrackLengthSeconds(trackLengthSeconds);
     baseTrack.setPublic(requestDto.getIsPublic());
     baseTrack.setDownloadable(requestDto.getIsDownloadable());
-
+    baseTrack.setTrackType(TrackType.BEAT);
     // Create beat from base track
     Beat beat = new Beat(baseTrack);
 
     // Set beat-specific properties
-    beat.setBpm(Integer.valueOf((String) metadata.getOrDefault("bpm",requestDto.getBpm())));
+    beat.setBpm(Integer.valueOf((String) metadata.getOrDefault("bpm", requestDto.getBpm())));
     beat.setKey(requestDto.getKey());
     beat.setTimeSignature(
         requestDto.getTimeSignature() != null ? requestDto.getTimeSignature() : "4/4");
@@ -126,7 +126,7 @@ public class AudioUploadServiceImpl implements AudioUploadService {
     baseTrack.setTrackLengthSeconds(trackLengthSeconds);
     baseTrack.setPublic(requestDto.getIsPublic());
     baseTrack.setDownloadable(requestDto.getIsDownloadable());
-
+    baseTrack.setTrackType(TrackType.SAMPLE);
     // Create audio sample from base track
     AudioSample sample = new AudioSample(baseTrack);
     SampleType sampleType = null;

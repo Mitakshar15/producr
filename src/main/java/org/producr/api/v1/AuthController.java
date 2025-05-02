@@ -31,16 +31,16 @@ public class AuthController implements AuthControllerV1Api {
 
   @Override
   public ResponseEntity<AuthResponse> signIn(SignInRequest signInRequest) throws Exception {
-    AuthResponse authResponse = mapper
-        .toAuthResponse(builder.buildSuccessApiResponse(Constants.SIGN_IN_SUCCESS_MESSAGE));
+    AuthResponse authResponse =
+        mapper.toAuthResponse(builder.buildSuccessApiResponse(Constants.SIGN_IN_SUCCESS_MESSAGE));
     authResponse.setData(userService.handleSignIn(signInRequest));
     return new ResponseEntity<>(authResponse, HttpStatus.OK);
   }
 
   @Override
   public ResponseEntity<AuthResponse> signUp(SignUpRequest signUpRequest) throws Exception {
-    AuthResponse response = mapper
-        .toAuthResponse(builder.buildSuccessApiResponse(Constants.SIGN_UP_SUCCESS_MESSAGE));
+    AuthResponse response =
+        mapper.toAuthResponse(builder.buildSuccessApiResponse(Constants.SIGN_UP_SUCCESS_MESSAGE));
     response.setData(userService.handleSignUp(signUpRequest));
     return new ResponseEntity<>(response, HttpStatus.OK);
   }

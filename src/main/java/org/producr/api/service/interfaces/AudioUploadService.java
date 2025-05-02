@@ -8,5 +8,5 @@ import java.io.IOException;
 
 public interface AudioUploadService {
   TrackUploadResponseDto uploadTrack(String userName, TrackUploadRequest requestDto)
-          throws IOException, UnsupportedAudioFileException;
+      throws IOException, UnsupportedAudioFileException;
 }
