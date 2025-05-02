@@ -129,6 +129,7 @@ public class StorageService {
         metadata.put("track", getTagField(tag, FieldKey.TRACK));
         metadata.put("year", getTagField(tag, FieldKey.YEAR));
         metadata.put("genre", getTagField(tag, FieldKey.GENRE));
+        metadata.put("bpm", getTagField(tag, FieldKey.BPM));
       }
 
       return metadata;

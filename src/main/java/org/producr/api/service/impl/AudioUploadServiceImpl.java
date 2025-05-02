@@ -64,6 +64,7 @@ public class AudioUploadServiceImpl implements AudioUploadService {
             } else {
                 throw new IllegalArgumentException("Unsupported track type: " + requestDto.getTrackType());
             }
+            //waveform data marked for removal, as it is uneccesarry
             String waveformData = storageService.generateWaveformData(requestDto.getAudioFilePath());
             track.setWaveformData(waveformData);
             // 5. Save the track
@@ -94,7 +95,7 @@ public class AudioUploadServiceImpl implements AudioUploadService {
     Beat beat = new Beat(baseTrack);
 
     // Set beat-specific properties
-    beat.setBpm(requestDto.getBpm());
+    beat.setBpm(Integer.valueOf((String) metadata.getOrDefault("bpm",requestDto.getBpm())));
     beat.setKey(requestDto.getKey());
     beat.setTimeSignature(
         requestDto.getTimeSignature() != null ? requestDto.getTimeSignature() : "4/4");
@@ -123,8 +124,8 @@ public class AudioUploadServiceImpl implements AudioUploadService {
     baseTrack.setProducer(producer);
     baseTrack.setAudioFileUrl(audioFileUrl);
     baseTrack.setTrackLengthSeconds(trackLengthSeconds);
-    // baseTrack.setPublic(requestDto.isPublic());
-    // baseTrack.setDownloadable(requestDto.isDownloadable());
+    baseTrack.setPublic(requestDto.getIsPublic());
+    baseTrack.setDownloadable(requestDto.getIsDownloadable());
 
     // Create audio sample from base track
     AudioSample sample = new AudioSample(baseTrack);

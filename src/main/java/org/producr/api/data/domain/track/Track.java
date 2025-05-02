@@ -41,6 +41,7 @@ public class Track implements Serializable {
   @Column(name = "audio_file_url", nullable = false)
   private String audioFileUrl;
 
+  //Marked for removal
   @Column(name = "waveform_data", columnDefinition = "TEXT")
   private String waveformData;
 
