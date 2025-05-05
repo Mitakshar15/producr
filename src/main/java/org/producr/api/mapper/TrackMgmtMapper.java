@@ -2,6 +2,7 @@ package org.producr.api.mapper;
 
 
 import org.mapstruct.Mapper;
+import org.producr.api.data.domain.pack.SamplePack;
 import org.producr.api.data.domain.track.Track;
 import org.producr.api.dto.BaseApiResponse;
 import org.producr.api.dtos.*;
@@ -22,4 +23,8 @@ public interface TrackMgmtMapper {
   TrackFeedPageResponse toTrackFeedPageResponse(BaseApiResponse baseApiResponse);
 
   TrackFeedItemDto toTrackFeedItemDto(Track track);
+
+  SamplePackResponse toSamplePackResponse(BaseApiResponse baseApiResponse);
+
+  SamplePackDto toSamplePackDto(SamplePack samplePack);
 }

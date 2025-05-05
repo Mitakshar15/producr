@@ -27,7 +27,7 @@ public class AudioTrackServiceImpl implements AudioTrackService {
   @Transactional(readOnly = true)
   public TrackFeedPageResponse getFeedTracks(User user, int page) {
 
-    //Implement Feed Recomendation Logic Later
+    // Implement Feed Recomendation Logic Later
 
     PageRequest pageRequest = PageRequest.of(page, Constants.FEED_DEFAULT_PAGE_SIZE,
         Sort.by(Sort.Direction.DESC, "createdAt"));

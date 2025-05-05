@@ -1,0 +1,101 @@
+components:
+  schemas:
+
+    SamplePackResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/SamplePackDto"
+      allOf:
+        - $ref: "./TrackServiceComponents.yaml#/components/schemas/TrackBaseApiResponse"
+
+    AudioSampleResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/AudioSampleDto"
+      allOf:
+        - $ref: "./TrackServiceComponents.yaml#/components/schemas/TrackBaseApiResponse"
+
+    SamplePackDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: double
+        producer:
+          $ref: '#/components/schemas/UserDto'
+        zipFileUrl:
+          type: string
+        samples:
+          type: array
+          items:
+            $ref: '#/components/schemas/AudioSampleDto'
+        totalSizeBytes:
+          type: integer
+          format: int64
+        sampleCount:
+          type: integer
+        published:
+          type: boolean
+          default: false
+        previewEnabled:
+          type: boolean
+          default: true
+        createdAt:
+          type: string
+          format: local-date-time
+        updatedAt:
+          type: string
+          format: local-date-time
+
+    AudioSampleDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        audioFileUrl:
+          type: string
+        fileSizeBytes:
+          type: integer
+          format: int64
+        loopTempo:
+          type: integer
+          description: BPM of the loop
+        key:
+          type: string
+          description: Musical key of the sample
+        trackLengthSeconds:
+          type: integer
+        sampleType:
+          type: string
+          enum: [ONE_SHOT, LOOP, DRUM_HIT, VOCAL_CHOP, INSTRUMENT, FX, RISER, TEXTURE, BASS, VOCAL, MELODY]
+        previewSample:
+          type: boolean
+          default: false
+
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        displayName:
+          type: string

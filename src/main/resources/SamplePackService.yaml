@@ -1,0 +1,136 @@
+openapi: 3.0.3
+info:
+  title: Sample Pack Service API
+  description: API for managing sample packs, including upload, previews, and publishing
+  version: 1.0.0
+
+servers:
+  - url: /api/v1
+    description: Version 1 of the Sample Pack API
+
+paths:
+  /v1/sample-packs:
+    post:
+      summary: Create a new sample pack
+      operationId: createSamplePack
+      tags:
+        - Sample Packs
+      parameters:
+        - in: header
+          name: "Authorization"
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: ZIP file containing audio samples
+                title:
+                  type: string
+                  description: Title of the sample pack
+                description:
+                  type: string
+                  description: Description of the sample pack
+                price:
+                  type: number
+                  format: double
+                  description: Price of the sample pack
+                enablePreviews:
+                  type: boolean
+                  default: true
+                  description: Whether to generate preview versions of samples
+              required:
+                - file
+                - title
+                - description
+                - price
+      responses:
+        '200':
+          description: Sample pack created successfully
+          content:
+            application/json:
+              schema:
+                $ref: './SamplePackServiceComponents.yaml#/components/schemas/SamplePackResponse'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+    get:
+      summary: Get published sample packs
+      operationId: getPublishedPacks
+      tags:
+        - Sample Packs
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: Page number for pagination
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+          description: Number of items per page
+      responses:
+        '200':
+          description: List of published sample packs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: './SamplePackServiceComponents.yaml#/components/schemas/SamplePackResponse'
+
+  /sample-packs/{packId}/previews:
+    get:
+      summary: Get preview samples for a pack
+      operationId: getPackPreviews
+      tags:
+        - Sample Packs
+      parameters:
+        - name: packId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of preview samples
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: './SamplePackServiceComponents.yaml#/components/schemas/AudioSampleResponse'
+        '404':
+          description: Sample pack not found
+
+  /sample-packs/{packId}/publish:
+    post:
+      summary: Publish a sample pack
+      operationId: publishPack
+      tags:
+        - Sample Packs
+      parameters:
+        - name: packId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sample pack published successfully
+        '404':
+          description: Sample pack not found
+        '401':
+          description: Unauthorized
+

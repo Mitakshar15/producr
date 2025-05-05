@@ -2,13 +2,15 @@ package org.producr.api.data.domain.track;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.producr.api.data.domain.pack.SamplePack;
 import org.producr.api.utils.enums.AudioCategory;
 import org.producr.api.utils.enums.SampleType;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true)
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,6 +35,9 @@ public class AudioSample extends Track {
   @Column(name = "loop_tempo")
   private Integer loopTempo;
 
+  @Column(name = "key")
+  private String key;
+
   @Column(name = "loop_bars")
   private Integer loopBars;
 
@@ -42,14 +47,18 @@ public class AudioSample extends Track {
   @OneToMany(mappedBy = "sample")
   private List<SampleLicense> licenses;
 
-  @Column(name = "sample_pack_id", nullable = true)
-  private String samplePackId;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sample_pack_id", nullable = false)
+  private SamplePack samplePack;
 
   @Column(name = "original_creator_name")
   private String originalCreatorName;
 
   @Column(name = "original_source")
   private String originalSource;
+
+  @Column(name = "file_size_bytes")
+  private Long fileSizeBytes;
 
   @Column(name = "audio_category")
   @Enumerated(EnumType.STRING)
@@ -78,6 +87,9 @@ public class AudioSample extends Track {
   @Column(name = "commercial_use_allowed")
   private boolean commercialUseAllowed = true;
 
+  @Column(name = "prview_enabled")
+  private Boolean isPreviewSample = false;
+
   public AudioSample(Track track) {
     this.setId(track.getId());
     this.setTitle(track.getTitle());
@@ -103,6 +115,10 @@ public class AudioSample extends Track {
     this.setLoop(false);
   }
 
+  @Override
+  public int hashCode() {
+    return Objects.hash(getId(), getTitle());
+  }
 
   public void incrementDownloadCount() {
     this.downloadCount++;

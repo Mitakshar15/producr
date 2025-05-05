@@ -8,4 +8,5 @@ public class Constants {
   public static final String GET_USER_PROFILE_SUCCES_MESSAGE = "get.user.profile.success";
   public static final int FEED_DEFAULT_PAGE_SIZE = 10;
   public static final String GET_TRACK_FEED_SUCCESS_MESSAGE = "get.track.feed.success";
+  public static final String CREATE_SAMPLE_PACK_SUCCESS_MESSAGE = "create.sample.pack.success";
 }

@@ -1,6 +1,5 @@
 package org.producr.api.service;
 
-
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -10,6 +9,7 @@ import org.jaudiotagger.tag.Tag;
 import org.producr.api.utils.enums.TrackType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -23,11 +23,12 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 @Service
 @Slf4j
 public class StorageService {
-
 
   @Value("${app.upload.storage-location}")
   private String audioStoragePath;
@@ -338,20 +339,220 @@ public class StorageService {
     return trackType.toString().toLowerCase() + "/" + userId.substring(0, 2) + "/" + userId;
   }
 
-  private String generateUniqueFilename(String userId, TrackType trackType, String fileExtension) {
+  private String generateUniqueFilename(String userId, TrackType trackType, String extension) {
     String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-    String uuid = UUID.randomUUID().toString().substring(0, 8);
-    return trackType.toString().toLowerCase() + "_" + timestamp + "_" + uuid + fileExtension;
+    String random = UUID.randomUUID().toString().substring(0, 8);
+
+    StringBuilder filename = new StringBuilder();
+    if (userId != null) {
+      filename.append(userId).append("_");
+    }
+    if (trackType != null) {
+      filename.append(trackType.toString().toLowerCase()).append("_");
+    }
+    filename.append(timestamp).append("_").append(random);
+
+    if (extension != null && !extension.isEmpty()) {
+      if (!extension.startsWith(".")) {
+        filename.append(".");
+      }
+      filename.append(extension);
+    }
+
+    return filename.toString();
   }
 
   private String getFileExtensionFromPath(String path) {
-    int lastDotIndex = path.lastIndexOf(".");
-    if (lastDotIndex > 0) {
-      return path.substring(lastDotIndex);
+    if (path == null || path.isEmpty()) {
+      return "";
     }
-    // Default to .mp3 if no extension found
-    return ".mp3";
+    int lastDot = path.lastIndexOf('.');
+    return lastDot > -1 ? path.substring(lastDot) : "";
   }
-  // For cloud storage integration (e.g., AWS S3, Google Cloud Storage)
-  // Implement alternative versions of the above methods using cloud SDKs
+
+
+  /**
+   * Stores a file in the specified category directory for a user
+   *
+   * @param file The file to store
+   * @param category The category directory (e.g., "sample-packs")
+   * @param userId ID of the user uploading the file
+   * @return The URL for accessing the stored file
+   * @throws IOException If file storage fails
+   */
+  public String storeFile(MultipartFile file, String category, String userId) throws IOException {
+    try {
+      // 1. Get file data from MultipartFile
+      byte[] fileData = file.getBytes();
+
+      // 2. Get file extension from original filename
+      String originalFilename = file.getOriginalFilename();
+      String fileExtension =
+          getFileExtensionFromPath(originalFilename != null ? originalFilename : "");
+
+      // 3. Generate a unique filename
+      String uniqueFilename = generateUniqueFilename(userId, null, fileExtension);
+
+      // 4. Create the directory structure
+      String directoryPath = category.toLowerCase() + "/" + userId.substring(0, 2) + "/" + userId;
+      Path uploadDir = Paths.get(audioStoragePath, directoryPath);
+
+      if (!Files.exists(uploadDir)) {
+        Files.createDirectories(uploadDir);
+      }
+
+      // 5. Save the file
+      Path filePath = uploadDir.resolve(uniqueFilename);
+      Files.write(filePath, fileData);
+
+      // 6. Return the public URL for accessing the file
+      return baseUrl + "/media/" + directoryPath + "/" + uniqueFilename;
+
+    } catch (Exception e) {
+      log.error("Failed to store file", e);
+      throw new IOException("Failed to store file: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Extracts a file entry from a ZipInputStream and stores it in the specified directory
+   *
+   * @param zis The ZipInputStream containing the file data
+   * @param entry The ZipEntry to extract
+   * @param directoryPath The directory path where the file should be stored
+   * @return The URL for accessing the stored file
+   * @throws IOException If extraction or storage fails
+   */
+  public String extractAndStoreZipEntry(ZipInputStream zis, ZipEntry entry, String directoryPath)
+      throws IOException {
+    try {
+      // 1. Read the entry data from the zip stream
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      byte[] buffer = new byte[4096];
+      int bytesRead;
+      while ((bytesRead = zis.read(buffer)) != -1) {
+        baos.write(buffer, 0, bytesRead);
+      }
+      byte[] fileData = baos.toByteArray();
+
+      // 2. Generate a unique filename, preserving the original extension
+      String fileExtension = getFileExtensionFromPath(entry.getName());
+      String uniqueFilename = UUID.randomUUID().toString() + fileExtension;
+
+      // 3. Create the directory structure
+      Path uploadDir = Paths.get(audioStoragePath, directoryPath);
+      if (!Files.exists(uploadDir)) {
+        Files.createDirectories(uploadDir);
+      }
+
+      // 4. Save the file
+      Path filePath = uploadDir.resolve(uniqueFilename);
+      Files.write(filePath, fileData);
+
+      // 5. Return the public URL for accessing the file
+      return baseUrl + "/media/" + directoryPath + "/" + uniqueFilename;
+
+    } catch (Exception e) {
+      log.error("Failed to extract and store zip entry: " + entry.getName(), e);
+      throw new IOException("Failed to extract and store zip entry: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Generates a preview audio file from the original audio file
+   *
+   * @param originalAudioUrl The URL of the original audio file
+   * @return The URL of the generated preview audio file
+   * @throws IOException If preview generation fails
+   */
+  public String generatePreviewAudio(String originalAudioUrl) throws IOException {
+    try {
+      // 1. Extract file path from URL
+      String filePath = extractFilePathFromUrl(originalAudioUrl);
+      Path originalPath = Paths.get(audioStoragePath, filePath);
+
+      if (!Files.exists(originalPath)) {
+        throw new IOException("Original audio file not found: " + originalPath);
+      }
+
+      // 2. Determine preview directory and filename
+      String previewDir = Paths.get(filePath).getParent().toString() + "/previews";
+      Path previewDirPath = Paths.get(audioStoragePath, previewDir);
+
+      if (!Files.exists(previewDirPath)) {
+        Files.createDirectories(previewDirPath);
+      }
+
+      String originalName = originalPath.getFileName().toString();
+      String previewName = "preview_" + originalName;
+      Path previewPath = previewDirPath.resolve(previewName);
+
+      // 3. Generate the preview audio (truncate to first 15 seconds)
+      // Note: This is a simplified example. In a real-world application,
+      // you would use a library like FFmpeg to create a proper audio preview
+      generatePreviewUsingFFmpeg(originalPath.toString(), previewPath.toString());
+
+      // 4. Return the URL to the preview file
+      return baseUrl + "/media/" + previewDir + "/" + previewName;
+
+    } catch (Exception e) {
+      log.error("Failed to generate preview audio", e);
+      throw new IOException("Failed to generate preview audio: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Extracts the file path from a URL
+   */
+  private String extractFilePathFromUrl(String url) {
+    // Remove the base URL prefix to get the relative path
+    if (url.startsWith(baseUrl + "/media/")) {
+      return url.substring((baseUrl + "/media/").length());
+    }
+    throw new IllegalArgumentException("URL does not match expected format: " + url);
+  }
+
+  /**
+   * Generates a preview audio file using FFmpeg (first 15 seconds)
+   */
+  private void generatePreviewUsingFFmpeg(String inputPath, String outputPath) throws IOException {
+    try {
+      // Build FFmpeg command to extract first 15 seconds
+      ProcessBuilder processBuilder = new ProcessBuilder("ffmpeg", "-i", inputPath, "-t", "15", // 15
+                                                                                                // seconds
+                                                                                                // duration
+          "-acodec", "copy", // Copy audio codec (no re-encoding)
+          outputPath);
+
+      // Redirect error stream to output stream
+      processBuilder.redirectErrorStream(true);
+
+      // Start the process
+      Process process = processBuilder.start();
+
+      // Read the output
+      try (BufferedReader reader =
+          new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+          log.debug("FFmpeg: " + line);
+        }
+      }
+
+      // Wait for the process to complete
+      int exitCode = process.waitFor();
+      if (exitCode != 0) {
+        throw new IOException("FFmpeg process failed with exit code: " + exitCode);
+      }
+
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new IOException("FFmpeg process was interrupted", e);
+    } catch (IOException e) {
+      throw new IOException("Failed to run FFmpeg: " + e.getMessage(), e);
+    }
+  }
+
 }
+
+

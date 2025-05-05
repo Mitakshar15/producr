@@ -281,6 +281,41 @@
                             </typeMappings>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>generate-producr-sample-pack-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/SamplePackService.yaml
+                            </inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>org.producr.api</apiPackage>
+                            <modelPackage>org.producr.api.dtos</modelPackage>
+                            <configOptions>
+                                <additionalModelTypeAnnotations>
+                                    @com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
+                                </additionalModelTypeAnnotations>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <performBeanValidation>true</performBeanValidation>
+                                <useBeanValidation>true</useBeanValidation>
+                                <useTags>true</useTags>
+                                <openapiNormalizer>REF_AS_PARENT_IN_ALLOF=true</openapiNormalizer>
+                                <unhandledException>true</unhandledException>
+                            </configOptions>
+                            <templateDirectory>
+                                ${project.basedir}/src/main/resources/openapi-templates
+                            </templateDirectory>
+                            <importMappings>
+                                <importMapping>BaseApiResponse=org.producr.api.dto.BaseApiResponse</importMapping>
+                            </importMappings>
+                            <typeMappings>
+                                <typeMapping>BaseApiResponse=BaseApiResponse</typeMapping>
+                            </typeMappings>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
