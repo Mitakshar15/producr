@@ -13,7 +13,6 @@ public interface UserMgmtMapper {
 
   AuthResponse toAuthResponse(BaseApiResponse apiResponse);
 
-
   UserMgmtBaseApiResponse toUserMgmtBaseApiResponse(BaseApiResponse apiResponse);
 
   UserProfileResponse toUserProfileResponse(BaseApiResponse baseApiResponse);

@@ -1,4 +1,4 @@
-package org.producr.api.service;
+package org.producr.api.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.audio.AudioFile;
@@ -28,7 +28,7 @@ import java.util.zip.ZipInputStream;
 
 @Service
 @Slf4j
-public class StorageService {
+public class StorageUtils {
 
   @Value("${app.upload.storage-location}")
   private String audioStoragePath;
@@ -70,7 +70,7 @@ public class StorageService {
       // generateWaveformData(audioData, filePath.toString());
 
       // 6. Return the public URL for accessing the file
-      return baseUrl + "/media/" + directoryPath + "/" + uniqueFilename;
+      return baseUrl + "/" + directoryPath + "/" + uniqueFilename;
 
     } catch (Exception e) {
       log.error("Failed to process and store audio file", e);
@@ -131,6 +131,7 @@ public class StorageService {
         metadata.put("year", getTagField(tag, FieldKey.YEAR));
         metadata.put("genre", getTagField(tag, FieldKey.GENRE));
         metadata.put("bpm", getTagField(tag, FieldKey.BPM));
+        metadata.putIfAbsent("bpm", "0");
       }
 
       return metadata;
@@ -406,7 +407,7 @@ public class StorageService {
       Files.write(filePath, fileData);
 
       // 6. Return the public URL for accessing the file
-      return baseUrl + "/media/" + directoryPath + "/" + uniqueFilename;
+      return baseUrl + "/" + directoryPath + "/" + uniqueFilename;
 
     } catch (Exception e) {
       log.error("Failed to store file", e);
@@ -450,7 +451,7 @@ public class StorageService {
       Files.write(filePath, fileData);
 
       // 5. Return the public URL for accessing the file
-      return baseUrl + "/media/" + directoryPath + "/" + uniqueFilename;
+      return baseUrl + "/" + directoryPath + "/" + uniqueFilename;
 
     } catch (Exception e) {
       log.error("Failed to extract and store zip entry: " + entry.getName(), e);
@@ -487,13 +488,11 @@ public class StorageService {
       String previewName = "preview_" + originalName;
       Path previewPath = previewDirPath.resolve(previewName);
 
-      // 3. Generate the preview audio (truncate to first 15 seconds)
-      // Note: This is a simplified example. In a real-world application,
-      // you would use a library like FFmpeg to create a proper audio preview
+
       generatePreviewUsingFFmpeg(originalPath.toString(), previewPath.toString());
 
       // 4. Return the URL to the preview file
-      return baseUrl + "/media/" + previewDir + "/" + previewName;
+      return baseUrl + previewDir + "/" + previewName;
 
     } catch (Exception e) {
       log.error("Failed to generate preview audio", e);
@@ -506,8 +505,8 @@ public class StorageService {
    */
   private String extractFilePathFromUrl(String url) {
     // Remove the base URL prefix to get the relative path
-    if (url.startsWith(baseUrl + "/media/")) {
-      return url.substring((baseUrl + "/media/").length());
+    if (url.startsWith(baseUrl)) {
+      return url.substring((baseUrl).length());
     }
     throw new IllegalArgumentException("URL does not match expected format: " + url);
   }

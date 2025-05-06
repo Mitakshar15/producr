@@ -27,7 +27,7 @@ public class SamplePack implements Serializable {
   @Column(name = "pack_id")
   private String id;
 
-  @Column(nullable = false, length = 100)
+  @Column(nullable = false, length = 250)
   private String title;
 
   @Column(columnDefinition = "TEXT")
@@ -48,7 +48,7 @@ public class SamplePack implements Serializable {
   private boolean previewEnabled = false;
 
   @OneToMany(mappedBy = "samplePack", cascade = CascadeType.ALL, orphanRemoval = true)
-  private Set<AudioSample> samples = new HashSet<>(); //Preview Samples
+  private Set<AudioSample> samples = new HashSet<>(); // Preview Samples
 
   @Column(name = "price")
   private Double price;
@@ -73,6 +73,9 @@ public class SamplePack implements Serializable {
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
 
+  @Column(name = "preview_sample_count")
+  private Integer previewSampleCount;
+
   // Business methods
   public void incrementDownloadCount() {
     this.downloadCount++;
@@ -87,12 +90,6 @@ public class SamplePack implements Serializable {
   @Override
   public int hashCode() {
     return Objects.hash(id);
-  }
-
-  public void removeSample(PackSample sample) {
-    samples.remove(sample);
-    sample.setSamplePack(null);
-    this.sampleCount--;
   }
 
 

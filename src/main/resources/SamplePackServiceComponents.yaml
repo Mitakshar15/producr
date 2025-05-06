@@ -10,12 +10,24 @@ components:
       allOf:
         - $ref: "./TrackServiceComponents.yaml#/components/schemas/TrackBaseApiResponse"
 
+
+    PublishedSamplePackResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/SamplePackDto"
+      allOf:
+        - $ref: "./TrackServiceComponents.yaml#/components/schemas/TrackBaseApiResponse"
+
     AudioSampleResponse:
       type: object
       properties:
         data:
-          type: object
-          $ref: "#/components/schemas/AudioSampleDto"
+          type: array
+          items:
+           $ref: "#/components/schemas/AudioSampleDto"
       allOf:
         - $ref: "./TrackServiceComponents.yaml#/components/schemas/TrackBaseApiResponse"
 

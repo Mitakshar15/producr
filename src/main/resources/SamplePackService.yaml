@@ -68,6 +68,11 @@ paths:
       tags:
         - Sample Packs
       parameters:
+        - name: "Authorization"
+          in: header
+          schema:
+            type: string
+          required: true
         - name: page
           in: query
           schema:
@@ -86,11 +91,10 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: './SamplePackServiceComponents.yaml#/components/schemas/SamplePackResponse'
+                type: object
+                $ref: './SamplePackServiceComponents.yaml#/components/schemas/PublishedSamplePackResponse'
 
-  /sample-packs/{packId}/previews:
+  /v1/sample-packs/{packId}/previews:
     get:
       summary: Get preview samples for a pack
       operationId: getPackPreviews
@@ -108,13 +112,12 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: './SamplePackServiceComponents.yaml#/components/schemas/AudioSampleResponse'
+                type: object
+                $ref: './SamplePackServiceComponents.yaml#/components/schemas/AudioSampleResponse'
         '404':
           description: Sample pack not found
 
-  /sample-packs/{packId}/publish:
+  /v1/sample-packs/{packId}/publish:
     post:
       summary: Publish a sample pack
       operationId: publishPack
@@ -129,6 +132,11 @@ paths:
       responses:
         '200':
           description: Sample pack published successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: './TrackServiceComponents.yaml#/components/schemas/TrackBaseApiResponse'
         '404':
           description: Sample pack not found
         '401':

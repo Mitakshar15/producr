@@ -27,7 +27,7 @@ public class Track implements Serializable {
   @Column(name = "track_id")
   private String id;
 
-  @Column(nullable = false, length = 100)
+  @Column(nullable = false, length = 250)
   private String title;
 
   @Column(columnDefinition = "TEXT")
