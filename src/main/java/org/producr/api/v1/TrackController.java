@@ -7,6 +7,7 @@ import org.producr.api.builder.ApiResponseBuilder;
 import org.producr.api.config.security.jwt.JwtTokenUtil;
 import org.producr.api.data.domain.user.User;
 import org.producr.api.dtos.TrackFeedPageResponse;
+import org.producr.api.dtos.TrackResponse;
 import org.producr.api.dtos.TrackUploadRequest;
 import org.producr.api.dtos.TrackUploadResponse;
 import org.producr.api.mapper.TrackMgmtMapper;
@@ -48,6 +49,15 @@ public class TrackController implements TrackControllerV1Api {
         builder.buildSuccessApiResponse(Constants.GET_TRACK_FEED_SUCCESS_MESSAGE));
     User user = userService.handleGetUserProfile(authorization);
     response.data(audioTrackService.getFeedTracks(user, page));
+    return new ResponseEntity<>(response, HttpStatus.OK);
+  }
+
+  @Override
+  public ResponseEntity<TrackResponse> getUserTracks(String authorization) throws Exception {
+    User user = userService.handleGetUserProfile(authorization);
+    TrackResponse response = mapper.toTrackResponse(
+        builder.buildSuccessApiResponse(Constants.GET_USER_TRACKS_SUCCESS_MESSAGE));
+    response.data(mapper.toTrackFeedItemDtoList(audioTrackService.getUserTracks(user)));
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 }

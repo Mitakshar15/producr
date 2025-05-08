@@ -57,7 +57,7 @@ components:
           format: int64
         sampleCount:
           type: integer
-        published:
+        isPublished:
           type: boolean
           default: false
         previewEnabled:

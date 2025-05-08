@@ -32,6 +32,20 @@ components:
       allOf:
         - $ref: '#/components/schemas/TrackBaseApiResponse'
 
+
+
+    TrackResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrackFeedItemDto"
+      allOf:
+        - $ref: "#/components/schemas/TrackBaseApiResponse"
+
+
+
     # *************** Track Feed DTO's **************
     TrackFeedItemDto:
       type: object

@@ -44,4 +44,8 @@ public interface TrackMgmtMapper {
   List<@Valid SamplePackDto> toSamplePackDtoList(List<SamplePack> publishedPacks);
 
   TrackBaseApiResponse toTrackBaseApiResponse(BaseApiResponse baseApiResponse);
+
+  TrackResponse toTrackResponse(BaseApiResponse baseApiResponse);
+
+  List<@Valid TrackFeedItemDto> toTrackFeedItemDtoList(List<Track> userTracks);
 }

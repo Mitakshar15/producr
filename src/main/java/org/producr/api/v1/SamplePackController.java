@@ -67,4 +67,15 @@ public class SamplePackController implements SamplePacksApi {
     samplePackService.publishPack(packId);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
+
+  @Override
+  public ResponseEntity<PublishedSamplePackResponse> getUnpublishedPacks(String authorization,
+      Integer page, Integer size) throws Exception {
+    PublishedSamplePackResponse response = mapper.toPublishedSamplePackResponse(
+        builder.buildSuccessApiResponse(Constants.GET_SAMPLE_PACK_SUCCESS_MESSAGE));
+    User user = userService.handleGetUserProfile(authorization);
+    response
+        .data(mapper.toSamplePackDtoList(samplePackService.getUnpublishedPacks(page, size, user)));
+    return new ResponseEntity<>(response, HttpStatus.OK);
+  }
 }

@@ -1,6 +1,7 @@
 package org.producr.api.data.repository;
 
 import org.producr.api.data.domain.pack.SamplePack;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,4 +18,7 @@ public interface SamplePackRepository extends JpaRepository<SamplePack, String> 
 
   List<SamplePack> findByTitleContainingIgnoreCaseAndIsPublishedTrue(String title,
       Pageable pageable);
+
+  @Query("SELECT s from  SamplePack s where s.isPublished=false")
+  List<SamplePack> findByUnPublished(PageRequest of);
 }

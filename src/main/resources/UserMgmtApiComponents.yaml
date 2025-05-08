@@ -60,8 +60,9 @@ components:
       required:
         - email
         - password
+        - username
       properties:
-        userName:
+        username:
           type: string
           description: First name of the user.
         password:
@@ -150,6 +151,13 @@ components:
           format: local-date-time
         noOfTracks:
           type: integer
+        accountVerified:
+          type: boolean
+        lastLoginAt:
+          type: string
+          format: local-date-time
+
+
 
 
 
@@ -236,6 +244,7 @@ components:
         createdAt:
           type: string
           format: local-date-time
+
 
 
     TrackUploadRequest:

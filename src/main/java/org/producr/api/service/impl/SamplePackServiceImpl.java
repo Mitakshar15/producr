@@ -12,6 +12,7 @@ import org.producr.api.utils.ProducrUtils;
 import org.producr.api.utils.StorageUtils;
 import org.producr.api.service.interfaces.SamplePackService;
 import org.producr.api.service.interfaces.UserService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -82,5 +83,10 @@ public class SamplePackServiceImpl implements SamplePackService {
   public List<SamplePack> getPublishedPacks(int page, int size, User user) {
     return samplePackRepository
         .findByPublished(org.springframework.data.domain.PageRequest.of(page, size));
+  }
+
+  @Override
+  public List<SamplePack> getUnpublishedPacks(Integer page, Integer size, User user) {
+    return samplePackRepository.findByUnPublished(PageRequest.of(page, size));
   }
 }

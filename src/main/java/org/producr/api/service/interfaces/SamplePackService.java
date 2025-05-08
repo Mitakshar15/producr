@@ -20,4 +20,6 @@ public interface SamplePackService {
   void publishPack(String packId);
 
   List<SamplePack> getPublishedPacks(int page, int size, User user);
+
+  List<SamplePack> getUnpublishedPacks(Integer page, Integer size, User user);
 }

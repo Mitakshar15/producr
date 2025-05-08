@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public AuthResponseDto handleSignUp(SignUpRequest signUpRequest) {
-    if (userRepository.existsByUsername(signUpRequest.getUserName())) {
+    if (userRepository.existsByUsername(signUpRequest.getUsername())) {
       throw new RuntimeException("UserName already in use"); // Change it to Custom Exception
     }
     if (userRepository.existsByEmail(signUpRequest.getEmail())) {
@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
     user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
     user.setProvider(AuthProvider.LOCAL);
     user.setRole(UserRole.USER);
-    user.setUsername(signUpRequest.getUserName());
+    user.setUsername(signUpRequest.getUsername());
     user.setEmail(signUpRequest.getEmail());
     // For demo purposes, set account as verified In production, you would implement email
     // verification logic
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
     // Create User Profile
     UserProfile profile = new UserProfile();
     profile.setUser(user);
-    profile.setDisplayName(signUpRequest.getUserName());
+    profile.setDisplayName(signUpRequest.getUsername());
     user.setProfile(profile);
 
     User savedUser = userRepository.save(user);

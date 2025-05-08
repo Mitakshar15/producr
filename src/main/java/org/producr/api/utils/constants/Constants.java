@@ -13,4 +13,5 @@ public class Constants {
       "get.sample.pack.preview.success";
   public static final String GET_SAMPLE_PACK_SUCCESS_MESSAGE = "get.sample.pack.success";
   public static final String SAMPLE_PACK_PUBLISH_SUCCESS_MESSAGE = "sample.pack.publish.success";
+  public static final String GET_USER_TRACKS_SUCCESS_MESSAGE = "get.user.tracks.success";
 }

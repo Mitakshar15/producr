@@ -5,6 +5,7 @@ import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.producr.api.data.domain.user.User;
+import org.producr.api.data.repository.UserRepository;
 import org.producr.api.dto.BaseApiResponse;
 import org.producr.api.dto.Metadata;
 import org.producr.api.dto.Status;
@@ -23,6 +24,7 @@ public class ApiResponseBuilder {
 
   private final Tracer tracer;
   private final UserMgmtMapper mapper;
+  private final UserRepository userRepository;
 
   public BaseApiResponse buildSuccessApiResponse(String statusMessage) {
     return new BaseApiResponse()
@@ -36,8 +38,7 @@ public class ApiResponseBuilder {
 
   public UserProfileDto buildUserProfileData(User user) {
     UserProfileDto dto = mapper.toUserProfileDto(user);
-    Hibernate.initialize(user.getTracks());
-    dto.setNoOfTracks(user.getTracks().size());
+    dto.setNoOfTracks(userRepository.getBeatsCount(user));
     return dto;
   }
 }

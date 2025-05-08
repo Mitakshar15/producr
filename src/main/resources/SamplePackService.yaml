@@ -142,3 +142,35 @@ paths:
         '401':
           description: Unauthorized
 
+  /v1/sample-packs/unpublished:
+    get:
+      summary: Get published sample packs
+      operationId: getUnpublishedPacks
+      tags:
+        - Sample Packs
+      parameters:
+        - name: "Authorization"
+          in: header
+          schema:
+            type: string
+          required: true
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: Page number for pagination
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+          description: Number of items per page
+      responses:
+        '200':
+          description: List of published sample packs
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: './SamplePackServiceComponents.yaml#/components/schemas/PublishedSamplePackResponse'

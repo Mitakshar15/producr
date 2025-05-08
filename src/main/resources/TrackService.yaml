@@ -8,7 +8,7 @@ info:
     name: API Support
     email: work.mitakshar@gmail.com
 servers:
-  - url: api
+  - url: ""
 tags:
   - name: PRODUCR marketplace  v1
     description: Producr - Online Beat Marketplace User Mgmt endpoints version 1
@@ -81,6 +81,39 @@ paths:
                 $ref: './UserMgmtApiComponents.yaml#/components/schemas/TrackUploadResponse'
         '422':
           description: "Get User Profile Request is valid but the service was not able to process it ..."
+          content:
+            application/json:
+              schema:
+                $ref: './UserMgmtApiComponents.yaml#/components/schemas/UserMgmtBaseApiResponse'
+        '401':
+          description: "Validations failed for request arguments ..."
+          content:
+            application/json:
+              schema:
+                $ref: './UserMgmtApiComponents.yaml#/components/schemas/UserMgmtBaseApiResponse'
+
+  /v1/track/getUserTrack:
+    get:
+      tags:
+        - track controller v1
+      summary: Get USer Tracks
+      description: Get USer Tracks
+      operationId: getUserTracks
+      parameters:
+        - in: header
+          name: "Authorization"
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Get User Tracks Success"
+          content:
+            application/json:
+              schema:
+                $ref: './TrackServiceComponents.yaml#/components/schemas/TrackResponse'
+        '422':
+          description: "Get User Tracks Request is valid but the service was not able to process it ..."
           content:
             application/json:
               schema:

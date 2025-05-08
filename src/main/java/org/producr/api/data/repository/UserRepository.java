@@ -21,4 +21,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 
   @Query("select u from User u where u.username=:userName or u.email=:userName")
   Optional<User> findByEmailOrUsername(@Param("userName") String userName);
+
+  @Query("select count (*) from Beat b where b.producer=:user")
+  Integer getBeatsCount(@Param("user") User user);
 }
